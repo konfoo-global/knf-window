@@ -26,6 +26,8 @@ export class KnfWindow extends LitElement {
 		width_right: { type: Number },
 		openable_left: { type: String },
 		openable_right: { type: String },
+
+		data: {attribute: false},
 	};
 
 	constructor() {
@@ -46,6 +48,11 @@ export class KnfWindow extends LitElement {
 		this.width_right = 0;
 		this.openable_left = null;
 		this.openable_right = null;
+
+		this.data = {
+			left_pane_size: { x: 0, y: 0 },
+			right_pane_size: { x: 0, y: 0 },
+		};
 
 		this._eventListener = undefined;
 	}
@@ -96,38 +103,47 @@ export class KnfWindow extends LitElement {
 		this.width_right = root.fields.width_second;
 		this.openable_left = root.fields.openable_left;
 		this.openable_right = root.fields.openable_right;
+
+		const margin = 10; // must be same as in Konfoo compute field
+
+		this.data.left_pane_size.x = this.width_left / 10;
+		this.data.left_pane_size.y = this.height / 10 - 2 * margin;
+
+		this.data.right_pane_size.x = this.width_right / 10 - 3 * margin;
+		this.data.right_pane_size.y = this.height / 10 - 2 * margin;
 	}
 
-	openableLeft() {
-		if (!this.openable_left) {
+	openLeft() {
+		if (!this.openable_left)
 			return svg``;
-		}
 
-		if (this.openable_left.toLowerCase() === 'left') {
+		const mode = this.openable_left.toLowerCase();
+
+		if (mode === 'left') {
 			return svg`
 				<path
 					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-					d="M ${this.offset_x + 10 + this.width_left / 10 - 20},${
-				this.offset_y + 10
-			} l -${this.width_left / 10 - 20}, ${
-				(this.height / 10 - 20) * 0.5
-			} L ${this.offset_x + 10 + this.width_left / 10 - 20}, ${
-				this.offset_y + this.height / 10 - 10
-			}"
+					d="M ${this.data.left_pane_size.x},0 l -${this.data.left_pane_size.x},${this.data.left_pane_size.y * 0.5} L ${this.data.left_pane_size.x},${this.data.left_pane_size.y}"
 					id="o-left"
 				/>
 			`;
 		}
 
-		if (this.openable_left.toLowerCase() === 'right') {
+		if (mode === 'right') {
 			return svg`
 				<path
 					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-					d="M ${this.offset_x + 10},${this.offset_y + 10} l ${
-				this.width_left / 10 - 20
-			}, ${(this.height / 10 - 20) * 0.5} L ${this.offset_x + 10}, ${
-				this.offset_y + this.height / 10 - 10
-			}"
+					d="M 0,0 l ${this.data.left_pane_size.x},${this.data.left_pane_size.y * 0.5} L 0,${this.data.left_pane_size.y}"
+					id="o-left"
+				/>
+			`;
+		}
+
+		if (mode === 'top') {
+			return svg`
+				<path
+					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+					d="M 0,${this.data.left_pane_size.y} L ${this.data.left_pane_size.x * 0.5},0 L ${this.data.left_pane_size.x},${this.data.left_pane_size.y}"
 					id="o-left"
 				/>
 			`;
@@ -136,44 +152,37 @@ export class KnfWindow extends LitElement {
 		return svg``;
 	}
 
-	openableRight() {
-		if (!this.openable_right) {
+	openRight() {
+		if (!this.openable_right)
 			return svg``;
-		}
 
-		if (this.openable_right.toLowerCase() === 'left') {
+		const mode = this.openable_right.toLowerCase();
+
+		if (mode === 'left') {
 			return svg`
 				<path
 					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-					d="M ${
-						this.offset_x +
-						10 +
-						this.width_left / 10 -
-						20 +
-						this.width_right / 10
-					}, ${this.offset_y + 10} l -${
-				this.width_right / 10 - 20
-			}, ${(this.height / 10 - 20) * 0.5} L ${
-				this.offset_x +
-				10 +
-				this.width_left / 10 -
-				20 +
-				this.width_right / 10
-			}, ${this.offset_y + this.height / 10 - 10}"
-					id="o-left"
+					d="M ${this.data.right_pane_size.x},0 L 0,${this.data.right_pane_size.y * 0.5} L ${this.data.right_pane_size.x},${this.data.right_pane_size.y}"
+					id="o-right"
 				/>
 			`;
 		}
 
-		if (this.openable_right.toLowerCase() === 'right') {
+		if (mode === 'right') {
 			return svg`
 				<path
 					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-					d="M ${this.offset_x + 10 + this.width_left / 10},${this.offset_y + 10} l ${
-				this.width_right / 10 - 20
-			}, ${(this.height / 10 - 20) * 0.5} L ${
-				this.offset_x + 10 + this.width_left / 10
-			}, ${this.offset_y + this.height / 10 - 10}"
+					d="M 0,0 l ${this.data.right_pane_size.x},${this.data.right_pane_size.y * 0.5} L 0,${this.data.right_pane_size.y}"
+					id="o-right"
+				/>
+			`;
+		}
+
+		if (mode === 'top') {
+			return svg`
+				<path
+					style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+					d="M 0,${this.data.right_pane_size.y} L ${this.data.right_pane_size.x * 0.5},0 L ${this.data.right_pane_size.x},${this.data.right_pane_size.y}"
 					id="o-left"
 				/>
 			`;
@@ -184,7 +193,6 @@ export class KnfWindow extends LitElement {
 
 	render() {
 		return svg`
-			<!-- prettier-ignore -->
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -202,24 +210,18 @@ export class KnfWindow extends LitElement {
 					<g id="h-measure">
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-							d="M ${this.offset_x},${this.offset_y} V ${
-			this.offset_y - this.measure_bar_height
-		}"
+							d="M ${this.offset_x},${this.offset_y} V ${this.offset_y - this.measure_bar_height}"
 							id="h-measure-left"
 						/>
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-							d="M ${this.offset_x + this.width / 10},${this.offset_y} V ${
-			this.offset_y - this.measure_bar_height
-		}"
+							d="M ${this.offset_x + this.width / 10},${this.offset_y} V ${this.offset_y - this.measure_bar_height}"
 							id="h-measure-right"
 						/>
 
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker1635);marker-end:url(#marker1511)"
-							d="M ${this.offset_x},${this.offset_y - this.measure_bar_height * 0.5} H ${
-			this.offset_x + this.width / 10
-		}"
+							d="M ${this.offset_x},${this.offset_y - this.measure_bar_height * 0.5} H ${this.offset_x + this.width / 10}"
 							id="h-measure-line"
 						/>
 						<text
@@ -233,23 +235,17 @@ export class KnfWindow extends LitElement {
 					<g id="v-measure">
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-							d="M ${this.offset_x},${this.offset_y} H ${
-			this.offset_x - this.measure_bar_height
-		}"
+							d="M ${this.offset_x},${this.offset_y} H ${this.offset_x - this.measure_bar_height}"
 							id="v-measure-top"
 						/>
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-							d="M ${this.offset_x},${this.offset_y + this.height / 10} H ${
-			this.offset_x - this.measure_bar_height
-		}"
+							d="M ${this.offset_x},${this.offset_y + this.height / 10} H ${this.offset_x - this.measure_bar_height}"
 							id="v-measure-bottom"
 						/>
 						<path
 							style="fill:none;stroke:#000000;stroke-width:1.0;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#marker1645);marker-end:url(#marker1521)"
-							d="M ${this.offset_x - this.measure_bar_height * 0.5},${this.offset_y} v ${
-			this.height / 10
-		}"
+							d="M ${this.offset_x - this.measure_bar_height * 0.5},${this.offset_y} v ${this.height / 10}"
 							id="v-measure-line"
 						/>
 						<g transform="translate(${this.offset_x}, ${this.offset_y}) rotate(-90)">
@@ -264,26 +260,26 @@ export class KnfWindow extends LitElement {
 						</g>
 					</g>
 
-					<g id="window-left">
+					<g id="window-left" transform="translate(${this.offset_x + 10}, ${this.offset_y + 10})">
 						<rect
 							style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-							width="${this.width_left / 10 - 20}"
+							width="${this.width_left / 10}"
 							height="${this.height / 10 - 20}"
-							x="${this.offset_x + 10}"
-							y="${this.offset_y + 10}"
+							x="0"
+							y="0"
 						/>
-						${this.openableLeft()}
+						${this.openLeft()}
 					</g>
 
-					<g id="window-right">
+					<g id="window-right" transform="translate(${this.offset_x + 10 + this.width_left / 10 + 10}, ${this.offset_y + 10})">
 						<rect
 							style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-							width="${this.width_right / 10 - 20}"
+							width="${this.width_right / 10 - 10 - 10 - 10}"
 							height="${this.height / 10 - 20}"
-							x="${this.offset_x + 10 + this.width_left / 10}"
-							y="${this.offset_y + 10}"
+							x="0"
+							y="0"
 						/>
-						${this.openableRight()}
+						${this.openRight()}
 					</g>
 				</g>
 			</svg>

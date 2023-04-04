@@ -40,8 +40,7 @@
   "customElements": "custom-elements.json",
   "eslintConfig": {
     "extends": [
-      "@open-wc",
-      "prettier"
+      "@open-wc"
     ]
   },
   "prettier": {

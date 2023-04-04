@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "**/*.html"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.js"
+      ],
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2022
+      },
+      "rules": {
+        "indent": ["error", "tab", { "SwitchCase": 1 }]
+      }
+    }
+  ]
+}
